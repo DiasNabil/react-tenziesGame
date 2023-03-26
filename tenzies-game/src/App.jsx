@@ -20,7 +20,7 @@ export default function App(){
   
   function handleHeld(id){
     setRandArray(prev => prev.map(die => {
-      return die.id === id ? {...die, isHeld : !die.isHeld} : {...die}
+      return die.id === id ? {...die, isHeld : !die.isHeld} : die
     }))
   }
 
