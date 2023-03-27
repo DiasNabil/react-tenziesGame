@@ -3,10 +3,19 @@ import Die from './components/Die'
 import _ from 'lodash'
 import {nanoid} from 'nanoid'
 import './App.css'
+import Confetti from 'react-confetti'
+import useWindowSize from 'react-use/lib/useWindowSize'
 
 export default function App(){
+  const {width, height} = useWindowSize()
 
   const [randArray , setRandArray] = React.useState(randDice)
+  const [tenzies , setTenzies] = React.useState(false)
+
+  React.useEffect(()=>{
+    randArray.every(die => die.isHeld && die.value === randArray[0].value) && setTenzies(prev => true)
+  },[randArray])
+  
 
   function randDice(){
     let array = []
@@ -25,7 +34,12 @@ export default function App(){
   }
 
   function handleRoll(){
-    
+    if(tenzies) {
+      setTenzies(false)
+      setRandArray(prev => prev.map(die => {
+        return {...die, isHeld: false, value:_.random(1, 6)}
+      }))
+    }else 
     setRandArray(prev => prev.map(die=>{
       return die.isHeld=== false ? {...die, value: _.random(1, 6)} : {...die}
     }))
@@ -39,6 +53,8 @@ export default function App(){
 
   return (
     <main>
+      {tenzies && <Confetti width={width} height={height} /> }
+      
       <div className="text">
         <h1>Tenzies</h1>
         <p>Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
@@ -46,7 +62,7 @@ export default function App(){
       <div className="dices">
         {diceElements}
       </div>
-      <button onClick={handleRoll}>Roll</button>
+      <button onClick={handleRoll}>{tenzies? "Nice !" : "Roll"}</button>
     </main>
   )
 }
